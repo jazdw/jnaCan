@@ -9,8 +9,8 @@ import static net.jazdw.jnacan.c.CLibrary.SIOCGIFINDEX;
 import static net.jazdw.jnacan.c.CLibrary.SIOCGIFMTU;
 import static net.jazdw.jnacan.c.CLibrary.SIOCGIFNAME;
 
-import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.SocketException;
 
 import com.sun.jna.Native;
 
@@ -20,6 +20,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
+ * Defines a CAN interface by name or index
+ * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
@@ -29,6 +31,10 @@ import lombok.ToString;
 public class CanInterface extends SocketAddress {
     private static final long serialVersionUID = 4959491385594877740L;
     
+    /**
+     * All interfaces, bind to this to receive on all interfaces
+     * or write to different interfaces
+     */
     public static final CanInterface ALL = new CanInterface(0, "All");
     
     Integer index = null;
@@ -48,11 +54,21 @@ public class CanInterface extends SocketAddress {
         this.name = name;
     }
     
+    /**
+     * @return true if it is the all interface
+     */
     public boolean isAllInterface() {
         return index == 0;
     }
     
-    public void resolveName(CanSocket socket) throws IOException {
+    /**
+     * Resolves the name of the interface
+     * The index must be pre-set
+     * 
+     * @param socket to use
+     * @throws SocketException
+     */
+    public void resolveName(CanSocket socket) throws SocketException {
         if (name != null)
             return;
         if (index == null)
@@ -66,12 +82,19 @@ public class CanInterface extends SocketAddress {
         ifreq ifr = new ifreq();
         ifr.ifr_ifru = new ifreq.ifr_ifru_union(index);
         if (socket.ioctl(SIOCGIFNAME, ifr) != 0) {
-            throw new IOException("Could not find name of interface " + index);
+            throw new SocketException("Could not find name of interface " + index);
         }
         name = Native.toString(ifr.ifr_ifrn.ifrn_name);
     }
     
-    public void resolveIndex(CanSocket socket) throws IOException {
+    /**
+     * Resolves the index of the interface
+     * The name must be pre-set
+     * 
+     * @param socket to use
+     * @throws SocketException
+     */
+    public void resolveIndex(CanSocket socket) throws SocketException {
         if (index != null)
             return;
         if (name == null)
@@ -80,12 +103,19 @@ public class CanInterface extends SocketAddress {
         ifreq ifr = new ifreq();
         ifr.ifr_ifrn = new ifreq.ifr_ifrn_union(CanSocket.toFixedLengthByteArray(name, 16));
         if (socket.ioctl(SIOCGIFINDEX, ifr) != 0) {
-            throw new IOException("Could not find interface " + name);
+            throw new SocketException("Could not find interface " + name);
         }
         index = ifr.ifr_ifru.ifru_ivalue;
     }
     
-    public void resolveMTU(CanSocket socket) throws IOException {
+    /**
+     * Resolves the MTU of the interface
+     * The name must be pre-set
+     * 
+     * @param socket to use
+     * @throws SocketException
+     */
+    public void resolveMTU(CanSocket socket) throws SocketException {
         if (mtu != null)
             return;
         if (index == ALL.index)
@@ -96,7 +126,7 @@ public class CanInterface extends SocketAddress {
         ifreq ifr = new ifreq();
         ifr.ifr_ifrn = new ifreq.ifr_ifrn_union(CanSocket.toFixedLengthByteArray(name, 16));
         if (socket.ioctl(SIOCGIFMTU, ifr) != 0)
-            throw new IOException("Could not get MTU of interface " + name);
+            throw new SocketException("Could not get MTU of interface " + name);
         mtu = ifr.ifr_ifru.ifru_mtu;
     }
     

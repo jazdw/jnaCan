@@ -9,6 +9,9 @@ import net.jazdw.jnacan.c.can_frame;
 import lombok.Data;
 
 /**
+ * Represents a CAN frame
+ * DLC is set automatically from the length of data
+ * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */

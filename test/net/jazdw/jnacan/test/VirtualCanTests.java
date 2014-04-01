@@ -67,8 +67,8 @@ public class VirtualCanTests {
         frames.add(new CanFrame(0x300, new byte[] {1, 2, 3}));
         
         for (int i = 0; i < frames.size(); i++) {
-            socket.write(frames.get(i));
-            CanFrame read = socket.recvMsg();
+            socket.send(frames.get(i));
+            CanFrame read = socket.receiveTimestamped();
             System.out.println("Read CanFrame " + i + ": " + read);
         }
     }
@@ -109,12 +109,12 @@ public class VirtualCanTests {
         noMatchFrames.add(new CanFrame(0x1A0, new byte[] {1, 2, 3}));
         
         for (int i = 0; i < matchFrames.size(); i++) {
-            socket.write(matchFrames.get(i));
-            socket.write(noMatchFrames.get(i));
+            socket.send(matchFrames.get(i));
+            socket.send(noMatchFrames.get(i));
         }
         
         for (int i = 0; i < matchFrames.size(); i++) {
-            CanFrame read = socket.read();
+            CanFrame read = socket.receive();
             
             if (!read.equals(matchFrames.get(i))) {
                 fail("Match failed" + i + ": " + read);

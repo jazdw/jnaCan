@@ -9,6 +9,11 @@ import net.jazdw.jnacan.c.can_filter;
 import lombok.Data;
 
 /**
+ * Specifies a filter for incoming CAN frames
+ * 
+ * The IDs of incoming CAN frames are masked then compared to the filters ID.
+ * See Linux SocketCan documentation for more information
+ * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
@@ -26,14 +31,23 @@ public class CanFilter {
         this.mask = mask;
     }
     
+    /**
+     * Inverts the operation of this filter
+     */
     public void setInverted() {
         id.setInverted();
     }
     
+    /**
+     * Clears the inversion of this filter
+     */
     public void clearInverted() {
         id.clearInverted();
     }
     
+    /**
+     * @return true if filter is inverted
+     */
     public boolean isInverted() {
         return id.isInverted();
     }

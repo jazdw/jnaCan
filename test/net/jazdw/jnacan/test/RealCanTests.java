@@ -40,7 +40,7 @@ public class RealCanTests {
     public void setUp() throws Exception {
         txSocket.openRaw();
         rxSocket.openRaw();
-        rxSocket.setTimeout(Integer.valueOf(testProps.getProperty("rxTimeout", "200")));
+        rxSocket.setReceiveTimeout(Integer.valueOf(testProps.getProperty("rxTimeout", "200")));
         
         CanInterface txIf = new CanInterface(testProps.getProperty("real.txinterface", "can0"));
         CanInterface rxIf = new CanInterface(testProps.getProperty("real.rxinterface", "can1"));
@@ -68,8 +68,8 @@ public class RealCanTests {
             for (int j = 0; j < 8; j++) {
                 txFrame.getData()[j] = (byte) rnd.nextInt();
             }
-            txSocket.write(txFrame);
-            rxFrame = rxSocket.read();
+            txSocket.send(txFrame);
+            rxFrame = rxSocket.receive();
             if (!rxFrame.equals(txFrame)) {
                 fail("Transmitted: " + txFrame + " Received: " + rxFrame);
             }
