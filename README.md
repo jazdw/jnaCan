@@ -10,9 +10,11 @@ The library currently only supports the raw can mode. The read and write calls w
 
 A Netty 4.0 channel implementation is included.
 
+jnaCan is licensed under the GNU LESSER GENERAL PUBLIC LICENSE Version 3, see LICENSE.txt
+
 jnaerator switches
 ==================
-Note that some of constants defined in the linux C header files may be different on your platform and so the generated Java code might not work. I have tested the bindings on x86_64 and arm7l (BeagleBone).
+Note that some of constants defined in the Linux C header files may be different on your platform and so the generated Java code might not work. I have tested the bindings on x86_64 and arm7l (BeagleBone).
 
 If you need to create your own bindings, this is the command I used with jnaerator to generate the Java files in the JNA "CLibrary" binding package. Some small modifications were made afterwards, I addded padding to can_frame and fixed an error in ifreq.
 
