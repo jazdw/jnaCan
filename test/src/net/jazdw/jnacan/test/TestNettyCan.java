@@ -18,7 +18,9 @@ import io.netty.channel.oio.OioEventLoopGroup;
 
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import static org.junit.Assert.*;
 import net.jazdw.jnacan.CanFilter;
@@ -33,12 +35,16 @@ import net.jazdw.jnacan.netty.CanChannelOption;
  */
 public class TestNettyCan {
     EventLoopGroup group = new OioEventLoopGroup();
-    Properties testProps = new Properties();
+    static Properties testProps = new Properties();
     
     @BeforeClass
-    public void setup() throws IOException {
-        testProps.load(getClass().getResourceAsStream("test.properties"));
+    public static void setup() throws IOException {
+        testProps.load(TestNettyCan.class.getResourceAsStream("/test.properties"));
     }
+
+    @Rule
+    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("global.testTimeout")));
+
     
     @After
     public void shutdown() throws InterruptedException {

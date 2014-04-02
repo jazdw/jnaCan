@@ -19,7 +19,9 @@ import net.jazdw.jnacan.CanSocket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 /**
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
@@ -27,12 +29,16 @@ import org.junit.Test;
  */
 public class VirtualCanTests {
     CanSocket socket = new CanSocket();
-    Properties testProps = new Properties();
+    static Properties testProps = new Properties();
 
     @BeforeClass
-    public void setup() throws IOException {
-        testProps.load(getClass().getResourceAsStream("test.properties"));
+    public static void setup() throws IOException {
+        testProps.load(VirtualCanTests.class.getResourceAsStream("/test.properties"));
     }
+    
+    @Rule
+    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("global.testTimeout")));
+
     
     @Before
     public void setUp() throws Exception {

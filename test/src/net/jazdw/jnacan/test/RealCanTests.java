@@ -17,7 +17,9 @@ import net.jazdw.jnacan.CanSocket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 /**
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
@@ -27,20 +29,23 @@ public class RealCanTests {
     CanSocket txSocket = new CanSocket();
     CanSocket rxSocket = new CanSocket();
     static Properties testProps = new Properties();
-
+    
     @BeforeClass
     public static void setUpBeforeClass() {
         try {
-            testProps.load(RealCanTests.class.getResourceAsStream("test.properties"));
+            testProps.load(RealCanTests.class.getResourceAsStream("/test.properties"));
         } catch (Exception e) {
         }
     }
+    
+    @Rule
+    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("global.testTimeout")));
 
     @Before
     public void setUp() throws Exception {
         txSocket.openRaw();
         rxSocket.openRaw();
-        rxSocket.setReceiveTimeout(Integer.valueOf(testProps.getProperty("rxTimeout", "200")));
+        rxSocket.setReceiveTimeout(Integer.valueOf(testProps.getProperty("global.canReceiveTimeout", "200")));
         
         CanInterface txIf = new CanInterface(testProps.getProperty("real.txinterface", "can0"));
         CanInterface rxIf = new CanInterface(testProps.getProperty("real.rxinterface", "can1"));
