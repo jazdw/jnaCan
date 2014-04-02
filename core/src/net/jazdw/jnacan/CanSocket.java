@@ -48,6 +48,7 @@ public class CanSocket implements Closeable {
     private int fd = -1;
     private CanInterface boundInterface = null;
     private boolean timeoutEnabled = false;
+    private CanFilter[] currentFilters = null;
     
     public CanSocket() {
     }
@@ -325,13 +326,16 @@ public class CanSocket implements Closeable {
     
     /**
      * Sets the CAN filters for the socket
+     * If filters is null or is zero length then the filters are cleared
      * 
      * @param filters
      * @throws SocketException
      */
     public void setFilters(CanFilter... filters) throws SocketException {
-        if (filters.length <= 0)
-            throw new IllegalArgumentException("At least one filter must be specified");
+        if (filters == null || filters.length <= 0) {
+            clearFilters();
+            return;
+        }
         
         can_filter.ByReference filterRef = new can_filter.ByReference();
         can_filter[] filterArray = (can_filter[]) filterRef.toArray(filters.length);
@@ -345,6 +349,18 @@ public class CanSocket implements Closeable {
         if (cLib.setsockopt(fd, SOL_CAN_RAW, CAN_RAW_FILTER, filterRef.getPointer(), length) < 0) {
             throw new SocketException("Could not set CAN_RAW_FILTER socket option");
         }
+        
+        currentFilters = filters;
+    }
+    
+    /**
+     * Gets the last applied filters
+     * Will return null for a socket which has no filters applied
+     * 
+     * @return
+     */
+    public CanFilter[] getFilters() {
+        return currentFilters;
     }
     
     /**
@@ -362,7 +378,7 @@ public class CanSocket implements Closeable {
      * @param errorFilter
      * @throws IOException
      */
-    public void setErrorFilter(int errorFilter) throws IOException {
+    public void setErrorFilter(int errorFilter) throws SocketException {
         IntByReference filter = new IntByReference(errorFilter);
         if (cLib.setsockopt(fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, filter.getPointer(), 4) < 0) {
             throw new SocketException("Could not set CAN_RAW_ERR_FILTER socket option");

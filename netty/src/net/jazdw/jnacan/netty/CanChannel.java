@@ -7,15 +7,19 @@ package net.jazdw.jnacan.netty;
 
 import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelMetadata;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.oio.AbstractOioMessageChannel;
 import io.netty.util.internal.StringUtil;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import static net.jazdw.jnacan.netty.CanChannelOption.*;
+import net.jazdw.jnacan.CanFilter;
 import net.jazdw.jnacan.CanFrame;
 import net.jazdw.jnacan.CanInterface;
 import net.jazdw.jnacan.CanSocket;
@@ -110,8 +114,7 @@ public class CanChannel extends AbstractOioMessageChannel {
         socket.setTimestamp(config.isTimestamp());
         socket.setLoopback(config.isLoopback());
         socket.setRecvOwnMsgs(config.isRecvOwnMsgs());
-        if (config.getFilters().length > 0)
-            socket.setFilters(config.getFilters());
+        socket.setFilters(config.getFilters());
         socket.setErrorFilter(config.getErrorFilter());
         socket.setReceiveTimeout(config.getReceiveTimeout());
         
@@ -190,5 +193,38 @@ public class CanChannel extends AbstractOioMessageChannel {
                 throw new UnsupportedOperationException("unsupported message type: " + StringUtil.simpleClassName(o));
             }
         }
+    }
+    
+    /**
+     * Set channel options on the fly
+     * 
+     * @param option
+     * @param value
+     * @return
+     * @throws SocketException
+     */
+    public <T> boolean setOption(ChannelOption<T> option, T value) throws SocketException {
+        if (option == null) {
+            throw new NullPointerException("option");
+        }
+        if (value == null) {
+            throw new NullPointerException("value");
+        }
+        
+        if (option == TIMESTAMP) {
+            socket.setTimestamp((Boolean) value);
+        } else if (option == LOOPBACK) {
+            socket.setLoopback((Boolean) value);
+        } else if (option == RECV_OWN_MSGS) {
+            socket.setRecvOwnMsgs((Boolean) value);
+        } else if (option == FILTERS) {
+            socket.setFilters((CanFilter[]) value);
+        } else if (option == ERROR_FILTER) {
+            socket.setErrorFilter((Integer) value);
+        } else if (option == RECEIVE_TIMEOUT) {
+            socket.setReceiveTimeout((Integer) value);
+        }
+        
+        return true;
     }
 }

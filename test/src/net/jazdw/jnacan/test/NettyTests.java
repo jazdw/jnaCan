@@ -65,6 +65,9 @@ public class NettyTests {
     
     @Test
     public void testWrite() throws InterruptedException {
+        final CanFrame first = new CanFrame(0x1A0, new byte[] {1, 2, 3, 4, 5, 6, 7});
+        final CanFrame second = new CanFrame(0x300, new byte[] {1, 2, 3, 4, 5, 6, 7});
+        
         Bootstrap b = new Bootstrap();
         b.group(group);
         b.channel(CanChannel.class);
@@ -80,6 +83,11 @@ public class NettyTests {
                 ChannelPipeline pipeline = ch.pipeline();
                 pipeline.addLast(new SimpleChannelInboundHandler<CanFrame>() {
                     @Override
+                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                        ctx.writeAndFlush(first);
+                    }
+
+                    @Override
                     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
                         fail(cause.toString());
                     }
@@ -87,16 +95,27 @@ public class NettyTests {
                     @Override
                     protected void channelRead0(ChannelHandlerContext ctx, CanFrame msg) throws Exception {
                         System.out.println(msg);
-                        ctx.channel().close();
+                        
+                        if (msg.equals(first)) {
+                            ((CanChannel) ctx.channel()).setOption(
+                                    CanChannelOption.FILTERS,
+                                    new CanFilter[] {new CanFilter(0x300, 0xF00)});
+                            ctx.channel().writeAndFlush(second);
+                        }
+                        else if (msg.equals(second)) {
+                            ctx.channel().close();
+                        }
+                        else {
+                            ctx.channel().close();
+                            fail("Received unknown message");
+                        }
                     }
                 });
             }
         });
         
         CanInterface canIf = new CanInterface(testProps.getProperty("can.txInterface"));
-        ChannelFuture connectFuture = b.bind(canIf);
-        connectFuture.sync();
-        connectFuture.channel().writeAndFlush(new CanFrame(0x1A0, new byte[] {1, 2, 3, 4, 5, 6, 7})).sync();
+        ChannelFuture connectFuture = b.bind(canIf).sync();
         connectFuture.channel().closeFuture().sync();
     }
 }
