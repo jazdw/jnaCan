@@ -37,9 +37,8 @@ public class VirtualCanTests {
     }
     
     @Rule
-    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("global.testTimeout")));
+    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("global.testTimeout", "10000")));
 
-    
     @Before
     public void setUp() throws Exception {
         socket.openRaw();
@@ -65,6 +64,7 @@ public class VirtualCanTests {
     @Test
     public void timestampTest() throws IOException {
         socket.setTimestamp(true);
+        socket.setReceiveTimeout(Integer.valueOf(testProps.getProperty("global.canReceiveTimeout", "200")));
         
         List<CanFrame> frames = new ArrayList<CanFrame>();
         
