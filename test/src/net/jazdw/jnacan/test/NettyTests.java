@@ -5,6 +5,7 @@
 package net.jazdw.jnacan.test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import io.netty.bootstrap.Bootstrap;
@@ -33,17 +34,28 @@ import net.jazdw.jnacan.netty.CanChannelOption;
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
-public class TestNettyCan {
+public class NettyTests {
     EventLoopGroup group = new OioEventLoopGroup();
-    static Properties testProps = new Properties();
+    static Properties defaultProps = new Properties();
+    static Properties testProps;
     
     @BeforeClass
     public static void setup() throws IOException {
-        testProps.load(TestNettyCan.class.getResourceAsStream("/test.properties"));
+        InputStream defaultsStream = SocketTests.class.getResourceAsStream("/jnaCan-test-defaults.properties");
+        if (defaultsStream == null)
+            throw new IOException("Default properties file jnaCan-test-defaults.properties is missing from the classpath");
+        
+        defaultProps.load(defaultsStream);
+        testProps = new Properties(defaultProps);
+        
+        InputStream overrideStream = SocketTests.class.getResourceAsStream("/jnaCan-test.properties");
+        if (overrideStream != null) {
+            testProps.load(overrideStream);
+        }
     }
 
     @Rule
-    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("global.testTimeout", "10000")));
+    public Timeout globalTimeout = new Timeout(Integer.valueOf(testProps.getProperty("test.timeout", "10000")));
 
     
     @After
@@ -81,7 +93,7 @@ public class TestNettyCan {
             }
         });
         
-        CanInterface canIf = new CanInterface(testProps.getProperty("virtual.interface", "vcan0"));
+        CanInterface canIf = new CanInterface(testProps.getProperty("can.txInterface"));
         ChannelFuture connectFuture = b.bind(canIf);
         connectFuture.sync();
         connectFuture.channel().writeAndFlush(new CanFrame(0x1A0, new byte[] {1, 2, 3, 4, 5, 6, 7})).sync();
