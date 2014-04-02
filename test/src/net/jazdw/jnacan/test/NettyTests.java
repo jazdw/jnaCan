@@ -106,7 +106,6 @@ public class NettyTests {
                             ctx.channel().close();
                         }
                         else {
-                            ctx.channel().close();
                             fail("Received unknown message");
                         }
                     }
