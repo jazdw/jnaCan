@@ -33,7 +33,7 @@ public class bcm_msg_head extends Structure {
 	/** C type : __u32 */
 	public int nframes;
 	/** C type : can_frame[0] */
-	public can_frame[] frames = new can_frame[0];
+	public can_frame[] frames;
 	public bcm_msg_head() {
 		super();
 	}
@@ -59,8 +59,6 @@ public class bcm_msg_head extends Structure {
 		this.ival2 = ival2;
 		this.can_id = can_id;
 		this.nframes = nframes;
-		if ((frames.length != this.frames.length)) 
-			throw new IllegalArgumentException("Wrong array size !");
 		this.frames = frames;
 	}
 	public static class ByReference extends bcm_msg_head implements Structure.ByReference {

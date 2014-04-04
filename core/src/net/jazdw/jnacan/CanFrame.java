@@ -16,7 +16,7 @@ import lombok.Data;
  * @author Jared Wiltshire
  */
 @Data
-public class CanFrame {
+public class CanFrame implements CanMessage<can_frame> {
     CanId id;
     byte[] data;
     
@@ -34,14 +34,31 @@ public class CanFrame {
         this(id, new byte[0]);
     }
     
-    public CanFrame(int id, byte[] data) {
+    public CanFrame(int id, byte... data) {
         this(new CanId(id), data);
     }
     
-    public CanFrame(CanId id, byte[] data) {
+    public CanFrame(CanId id, byte... data) {
         if (data.length > 8)
             throw new IllegalArgumentException("Data larger than 8 bytes");
         this.data = data;
+        this.id = id;
+    }
+    
+    public CanFrame(int id, int... data) {
+        this(new CanId(id), data);
+    }
+    
+    public CanFrame(CanId id, int... data) {
+        if (data.length > 8)
+            throw new IllegalArgumentException("Data larger than 8 bytes");
+        
+        byte[] byteData = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            byteData[i] = (byte) data[i];
+        }
+        
+        this.data = byteData;
         this.id = id;
     }
     
@@ -51,7 +68,7 @@ public class CanFrame {
         return new can_frame(id.getId(), (byte) data.length, jnaData);
     }
 
-    public void setData(byte[] data) {
+    public void setData(byte... data) {
         if (data.length > 8)
             throw new IllegalArgumentException("Data larger than 8 bytes");
         this.data = data;

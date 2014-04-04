@@ -17,7 +17,7 @@ import java.util.Random;
 import net.jazdw.jnacan.CanFilter;
 import net.jazdw.jnacan.CanFrame;
 import net.jazdw.jnacan.CanInterface;
-import net.jazdw.jnacan.CanSocket;
+import net.jazdw.jnacan.RawCanSocket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,8 +31,8 @@ import org.junit.rules.Timeout;
  * @author Jared Wiltshire
  */
 public class SocketTests {
-    CanSocket txSocket = new CanSocket();
-    CanSocket rxSocket = new CanSocket();
+    RawCanSocket txSocket = new RawCanSocket();
+    RawCanSocket rxSocket = new RawCanSocket();
     static Properties defaultProps = new Properties();
     static Properties testProps;
 
@@ -56,8 +56,8 @@ public class SocketTests {
 
     @Before
     public void setUp() throws Exception {
-        txSocket.openRaw();
-        rxSocket.openRaw();
+        txSocket.open();
+        rxSocket.open();
         rxSocket.setReceiveTimeout(Integer.valueOf(testProps.getProperty("test.timeout")));
         
         CanInterface txIf = new CanInterface(testProps.getProperty("can.txInterface"));

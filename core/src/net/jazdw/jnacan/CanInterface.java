@@ -68,7 +68,7 @@ public class CanInterface extends SocketAddress {
      * @param socket to use
      * @throws SocketException
      */
-    public void resolveName(CanSocket socket) throws SocketException {
+    public void resolveName(CanSocket<?, ?> socket) throws SocketException {
         if (name != null)
             return;
         if (index == null)
@@ -94,14 +94,14 @@ public class CanInterface extends SocketAddress {
      * @param socket to use
      * @throws SocketException
      */
-    public void resolveIndex(CanSocket socket) throws SocketException {
+    public void resolveIndex(CanSocket<?, ?> socket) throws SocketException {
         if (index != null)
             return;
         if (name == null)
             resolveName(socket);
         
         ifreq ifr = new ifreq();
-        ifr.ifr_ifrn = new ifreq.ifr_ifrn_union(CanSocket.toFixedLengthByteArray(name, 16));
+        ifr.ifr_ifrn = new ifreq.ifr_ifrn_union(Utils.stringToFixedLengthByteArray(name, 16));
         if (socket.ioctl(SIOCGIFINDEX, ifr) != 0) {
             throw new SocketException("Could not find interface " + name);
         }
@@ -115,7 +115,7 @@ public class CanInterface extends SocketAddress {
      * @param socket to use
      * @throws SocketException
      */
-    public void resolveMTU(CanSocket socket) throws SocketException {
+    public void resolveMTU(CanSocket<?, ?> socket) throws SocketException {
         if (mtu != null)
             return;
         if (index == ALL.index)
@@ -124,7 +124,7 @@ public class CanInterface extends SocketAddress {
             resolveName(socket);
         
         ifreq ifr = new ifreq();
-        ifr.ifr_ifrn = new ifreq.ifr_ifrn_union(CanSocket.toFixedLengthByteArray(name, 16));
+        ifr.ifr_ifrn = new ifreq.ifr_ifrn_union(Utils.stringToFixedLengthByteArray(name, 16));
         if (socket.ioctl(SIOCGIFMTU, ifr) != 0)
             throw new SocketException("Could not get MTU of interface " + name);
         mtu = ifr.ifr_ifru.ifru_mtu;

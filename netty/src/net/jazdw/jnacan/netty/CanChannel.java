@@ -22,7 +22,7 @@ import static net.jazdw.jnacan.netty.CanChannelOption.*;
 import net.jazdw.jnacan.CanFilter;
 import net.jazdw.jnacan.CanFrame;
 import net.jazdw.jnacan.CanInterface;
-import net.jazdw.jnacan.CanSocket;
+import net.jazdw.jnacan.RawCanSocket;
 
 /**
  * Netty 4.0 channel implementation for jnaCAN
@@ -35,13 +35,13 @@ public class CanChannel extends AbstractOioMessageChannel {
 
     private static final ChannelMetadata METADATA = new ChannelMetadata(false);
     private final CanChannelConfig config;
-    private final CanSocket socket;
+    private final RawCanSocket socket;
 
     public CanChannel() {
         super(null);
-        this.socket = new CanSocket();
+        this.socket = new RawCanSocket();
         try {
-            this.socket.openRaw();
+            this.socket.open();
         } catch (IOException e) {
             throw new ChannelException("failed to create a new socket", e);
         }

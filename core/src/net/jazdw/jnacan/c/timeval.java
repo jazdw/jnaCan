@@ -30,6 +30,17 @@ public class timeval extends Structure {
 	protected List<? > getFieldOrder() {
 		return Arrays.asList("tv_sec", "tv_usec");
 	}
+	 /**
+     * @param tv_sec seconds<br>
+     * C type : __kernel_time_t<br>
+     * @param tv_usec microseconds<br>
+     * C type : __kernel_suseconds_t
+     */
+	public timeval(long tv_sec, long tv_usec) {
+        super();
+        this.tv_sec = new NativeLong(tv_sec);
+        this.tv_usec = new NativeLong(tv_usec);
+    }
 	/**
 	 * @param tv_sec seconds<br>
 	 * C type : __kernel_time_t<br>
