@@ -34,7 +34,7 @@ public class TimestampedCanFrame extends CanFrame {
      * @return milliseconds since 1 January 1970
      */
     public long toEpocTime() {
-        return seconds * 1000 + microseconds / 1000;
+        return Utils.microsToMillis(seconds, microseconds);
     }
 
     @Override

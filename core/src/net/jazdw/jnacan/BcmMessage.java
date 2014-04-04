@@ -4,10 +4,13 @@
  */
 package net.jazdw.jnacan;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.jazdw.jnacan.Utils.ReverseEnumMap;
+import net.jazdw.jnacan.Utils.ValueEnum;
 import net.jazdw.jnacan.c.CLibrary;
 import net.jazdw.jnacan.c.bcm_msg_head;
 import net.jazdw.jnacan.c.can_frame;
@@ -31,10 +34,22 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
     }
     
     protected BcmMessage(bcm_msg_head msg) {
-        // TODO
+        operation = BcmOperation.fromValue(msg.opcode);
+        flags = null;
+        count = msg.count;
+        interval1 = Utils.timevalToMillis(msg.ival1);
+        interval2 = Utils.timevalToMillis(msg.ival2);
+        id = new CanId(msg.can_id);
+        frames = new ArrayList<CanFrame>(msg.nframes);
+        
+        if (msg.frames.length == msg.nframes) {
+            for (int i = 0; i < msg.nframes; i++) {
+                frames.add(new CanFrame(msg.frames[i]));
+            }
+        }
     }
     
-    public enum BcmOperation {
+    public enum BcmOperation implements ValueEnum<Integer> {
         // transmit path
         TX_SETUP(CLibrary.TX_SETUP), TX_DELETE(CLibrary.TX_DELETE), TX_READ(CLibrary.TX_READ), TX_SEND(CLibrary.TX_SEND),
         // receive path
@@ -43,30 +58,42 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
         TX_STATUS(CLibrary.TX_STATUS), TX_EXPIRED(CLibrary.TX_EXPIRED),
         RX_STATUS(CLibrary.RX_STATUS), RX_TIMEOUT(CLibrary.RX_TIMEOUT), RX_CHANGED(CLibrary.RX_CHANGED);
         
-        int code;
+        int value;
+        private static ReverseEnumMap<Integer, BcmOperation> map = ReverseEnumMap.create(BcmOperation.class);
         
-        BcmOperation(int code) {
-            this.code = code;
+        BcmOperation(int value) {
+            this.value = value;
         }
         
-        public int code() {
-            return code;
+        @Override
+        public Integer value() {
+            return value;
+        }
+        
+        public static BcmOperation fromValue(Integer value) {
+            return map.get(value);
         }
     }
     
-    public enum BcmFlag {
+    public enum BcmFlag implements ValueEnum<Integer> {
         SETTIMER(CLibrary.SETTIMER), STARTTIMER(CLibrary.STARTTIMER),
         TX_COUNTEVT(CLibrary.TX_COUNTEVT), TX_ANNOUNCE(CLibrary.TX_ANNOUNCE), TX_CP_CAN_ID(CLibrary.TX_CP_CAN_ID), TX_RESET_MULTI_IDX(CLibrary.TX_RESET_MULTI_IDX),
         RX_FILTER_ID(CLibrary.RX_FILTER_ID), RX_RTR_FRAME(CLibrary.RX_RTR_FRAME), RX_CHECK_DLC(CLibrary.RX_CHECK_DLC), RX_NO_AUTOTIMER(CLibrary.RX_NO_AUTOTIMER), RX_ANNOUNCE_RESUME(CLibrary.RX_ANNOUNCE_RESUME);
         
-        int flag;
+        int value;
+        private static ReverseEnumMap<Integer, BcmFlag> map = ReverseEnumMap.create(BcmFlag.class);
         
-        BcmFlag(int flag) {
-            this.flag = flag;
+        BcmFlag(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public Integer value() {
+            return value;
         }
         
-        public int flag() {
-            return flag;
+        public static BcmFlag fromValue(Integer value) {
+            return map.get(value);
         }
     }
     
@@ -78,17 +105,17 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
     public bcm_msg_head toJnaType() {
         bcm_msg_head msg = new bcm_msg_head();
         
-        msg.opcode = operation.code();
+        msg.opcode = operation.value();
         
         int flagsValue = 0;
         for (BcmFlag flag : flags) {
-            flagsValue |= flag.flag();
+            flagsValue |= flag.value();
         }
         msg.flags = flagsValue;
         
         msg.count = count;
-        msg.ival1 = Utils.msToTimeval(interval1);
-        msg.ival2 = Utils.msToTimeval(interval2);
+        msg.ival1 = Utils.millisToTimeval(interval1);
+        msg.ival2 = Utils.millisToTimeval(interval2);
         msg.can_id = id == null ? 0 : id.getId();
 
         msg.nframes = frames.size();

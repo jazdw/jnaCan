@@ -30,7 +30,7 @@ import org.junit.rules.Timeout;
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
-public class SocketTests {
+public class RawTests {
     RawCanSocket txSocket = new RawCanSocket();
     RawCanSocket rxSocket = new RawCanSocket();
     static Properties defaultProps = new Properties();
@@ -38,14 +38,14 @@ public class SocketTests {
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
-        InputStream defaultsStream = SocketTests.class.getResourceAsStream("/jnaCan-test-defaults.properties");
+        InputStream defaultsStream = RawTests.class.getResourceAsStream("/jnaCan-test-defaults.properties");
         if (defaultsStream == null)
             throw new IOException("Default properties file jnaCan-test-defaults.properties is missing from the classpath");
         
         defaultProps.load(defaultsStream);
         testProps = new Properties(defaultProps);
         
-        InputStream overrideStream = SocketTests.class.getResourceAsStream("/jnaCan-test.properties");
+        InputStream overrideStream = RawTests.class.getResourceAsStream("/jnaCan-test.properties");
         if (overrideStream != null) {
             testProps.load(overrideStream);
         }

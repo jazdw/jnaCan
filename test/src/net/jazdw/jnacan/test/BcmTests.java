@@ -40,14 +40,14 @@ public class BcmTests {
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
-        InputStream defaultsStream = SocketTests.class.getResourceAsStream("/jnaCan-test-defaults.properties");
+        InputStream defaultsStream = BcmTests.class.getResourceAsStream("/jnaCan-test-defaults.properties");
         if (defaultsStream == null)
             throw new IOException("Default properties file jnaCan-test-defaults.properties is missing from the classpath");
         
         defaultProps.load(defaultsStream);
         testProps = new Properties(defaultProps);
         
-        InputStream overrideStream = SocketTests.class.getResourceAsStream("/jnaCan-test.properties");
+        InputStream overrideStream = BcmTests.class.getResourceAsStream("/jnaCan-test.properties");
         if (overrideStream != null) {
             testProps.load(overrideStream);
         }

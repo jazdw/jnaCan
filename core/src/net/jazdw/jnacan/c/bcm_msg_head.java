@@ -33,7 +33,7 @@ public class bcm_msg_head extends Structure {
 	/** C type : __u32 */
 	public int nframes;
 	/** C type : can_frame[0] */
-	public can_frame[] frames;
+	public can_frame[] frames = new can_frame[0];
 	public bcm_msg_head() {
 		super();
 	}

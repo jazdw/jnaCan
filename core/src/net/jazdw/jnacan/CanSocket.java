@@ -345,7 +345,7 @@ public abstract class CanSocket<J extends Structure, M extends CanMessage<J>> im
      * @throws IOException
      */
     public void setReceiveTimeout(int timeout) throws SocketException {
-        timeval time = Utils.msToTimeval(timeout);
+        timeval time = Utils.millisToTimeval(timeout);
         time.write();
         
         if (cLib.setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, time.getPointer(), time.size()) < 0) {
