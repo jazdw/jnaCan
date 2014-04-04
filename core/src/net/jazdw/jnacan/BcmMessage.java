@@ -35,7 +35,7 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
     
     protected BcmMessage(bcm_msg_head msg) {
         operation = BcmOperation.fromValue(msg.opcode);
-        flags = null;
+        flags = BcmFlag.fromValue(msg.flags);
         count = msg.count;
         interval1 = Utils.timevalToMillis(msg.ival1);
         interval2 = Utils.timevalToMillis(msg.ival2);
@@ -58,7 +58,7 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
         TX_STATUS(CLibrary.TX_STATUS), TX_EXPIRED(CLibrary.TX_EXPIRED),
         RX_STATUS(CLibrary.RX_STATUS), RX_TIMEOUT(CLibrary.RX_TIMEOUT), RX_CHANGED(CLibrary.RX_CHANGED);
         
-        int value;
+        private int value;
         private static ReverseEnumMap<Integer, BcmOperation> map = ReverseEnumMap.create(BcmOperation.class);
         
         BcmOperation(int value) {
@@ -80,8 +80,7 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
         TX_COUNTEVT(CLibrary.TX_COUNTEVT), TX_ANNOUNCE(CLibrary.TX_ANNOUNCE), TX_CP_CAN_ID(CLibrary.TX_CP_CAN_ID), TX_RESET_MULTI_IDX(CLibrary.TX_RESET_MULTI_IDX),
         RX_FILTER_ID(CLibrary.RX_FILTER_ID), RX_RTR_FRAME(CLibrary.RX_RTR_FRAME), RX_CHECK_DLC(CLibrary.RX_CHECK_DLC), RX_NO_AUTOTIMER(CLibrary.RX_NO_AUTOTIMER), RX_ANNOUNCE_RESUME(CLibrary.RX_ANNOUNCE_RESUME);
         
-        int value;
-        private static ReverseEnumMap<Integer, BcmFlag> map = ReverseEnumMap.create(BcmFlag.class);
+        private int value;
         
         BcmFlag(int value) {
             this.value = value;
@@ -92,8 +91,17 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
             return value;
         }
         
-        public static BcmFlag fromValue(Integer value) {
-            return map.get(value);
+        public static EnumSet<BcmFlag> fromValue(Integer value) {
+            if (value == 0) {
+                return EnumSet.noneOf(BcmFlag.class);
+            }
+            List<BcmFlag> list = new ArrayList<BcmFlag>();
+            for (BcmFlag flag : BcmFlag.values()) {
+                if ((value & flag.value) != 0) {
+                    list.add(flag);
+                }
+            }
+            return EnumSet.copyOf(list);
         }
     }
     
