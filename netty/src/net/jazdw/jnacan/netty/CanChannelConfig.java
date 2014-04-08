@@ -19,14 +19,14 @@ public interface CanChannelConfig extends ChannelConfig {
     /**
      * @return true if time-stamping is enabled
      */
-    boolean isTimestamp();
+    boolean isTimestampEnabled();
     
     /**
      * Sets if the socket should time-stamp frames
      * @param timestamp
      * @return
      */
-    CanChannelConfig setTimestamp(boolean timestamp);
+    CanChannelConfig setTimestampEnabled(boolean timestamp);
 
     /**
      * @return true if loop-back enabled

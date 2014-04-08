@@ -37,7 +37,7 @@ final class DefaultCanChannelConfig extends DefaultChannelConfig implements CanC
      */
     @Override
     public Map<ChannelOption<?>, Object> getOptions() {
-        return getOptions(super.getOptions(), TIMESTAMP, LOOPBACK, RECV_OWN_MSGS, FILTERS, ERROR_FILTER, RECEIVE_TIMEOUT);
+        return getOptions(super.getOptions(), TIMESTAMP_ENABLED, LOOPBACK, RECV_OWN_MSGS, FILTERS, ERROR_FILTER, RECEIVE_TIMEOUT);
     }
 
     /* (non-Javadoc)
@@ -46,8 +46,8 @@ final class DefaultCanChannelConfig extends DefaultChannelConfig implements CanC
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getOption(ChannelOption<T> option) {
-        if (option == TIMESTAMP) {
-            return (T) Boolean.valueOf(isTimestamp());
+        if (option == TIMESTAMP_ENABLED) {
+            return (T) Boolean.valueOf(isTimestampEnabled());
         }
         if (option == LOOPBACK) {
             return (T) Boolean.valueOf(isLoopback());
@@ -74,8 +74,8 @@ final class DefaultCanChannelConfig extends DefaultChannelConfig implements CanC
     public <T> boolean setOption(ChannelOption<T> option, T value) {
         validate(option, value);
         
-        if (option == TIMESTAMP) {
-            setTimestamp((Boolean) value);
+        if (option == TIMESTAMP_ENABLED) {
+            setTimestampEnabled((Boolean) value);
         } else if (option == LOOPBACK) {
             setLoopback((Boolean) value);
         } else if (option == RECV_OWN_MSGS) {
@@ -96,7 +96,7 @@ final class DefaultCanChannelConfig extends DefaultChannelConfig implements CanC
      * @see net.jazdw.jnacan.netty.CanChannelConfig#isTimestamp()
      */
     @Override
-    public boolean isTimestamp() {
+    public boolean isTimestampEnabled() {
         return timestamp;
     }
 
@@ -104,7 +104,7 @@ final class DefaultCanChannelConfig extends DefaultChannelConfig implements CanC
      * @see net.jazdw.jnacan.netty.CanChannelConfig#setTimestamp(boolean)
      */
     @Override
-    public CanChannelConfig setTimestamp(boolean timestamp) {
+    public CanChannelConfig setTimestampEnabled(boolean timestamp) {
         this.timestamp = timestamp;
         return this;
     }

@@ -33,6 +33,7 @@ public class RawCanSocket extends CanSocket<can_frame, CanFrame> {
     }
     
     protected CanFilter[] currentFilters = null;
+    protected boolean timestampEnabled = false;
     
     /* (non-Javadoc)
      * @see net.jazdw.jnacan.CanSocket#open()
@@ -221,14 +222,19 @@ public class RawCanSocket extends CanSocket<can_frame, CanFrame> {
 
     /**
      * Set this to enable time-stamping of can frames
-     * @param timestamp
+     * @param timestampEnabled
      * @throws SocketException
      */
-    public void setTimestamp(boolean timestamp) throws SocketException {
-        int timestampInt = timestamp ? 1 : 0;
+    public void setTimestampEnabled(boolean timestampEnabled) throws SocketException {
+        int timestampInt = timestampEnabled ? 1 : 0;
         IntByReference timestampRef = new IntByReference(timestampInt);
         if (cLib.setsockopt(fd, SOL_SOCKET, SO_TIMESTAMP, timestampRef.getPointer(), 4) < 0) {
             throw new SocketException("Could not set SO_TIMESTAMP socket option");
         }
+        this.timestampEnabled = timestampEnabled;
+    }
+    
+    public boolean isTimestampEnabled() {
+        return timestampEnabled;
     }
 }

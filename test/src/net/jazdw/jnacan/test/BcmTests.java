@@ -61,7 +61,7 @@ public class BcmTests {
         txSocket.open();
         rxSocket.open();
         rxSocket.setReceiveTimeout(Integer.valueOf(testProps.getProperty("test.timeout")));
-        rxSocket.setTimestamp(true);
+        rxSocket.setTimestampEnabled(true);
         
         CanInterface txIf = new CanInterface(testProps.getProperty("can.txInterface"));
         CanInterface rxIf = new CanInterface(testProps.getProperty("can.rxInterface"));
