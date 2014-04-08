@@ -62,6 +62,10 @@ public class CanFrame implements CanMessage<can_frame> {
         this.id = id;
     }
     
+    /* (non-Javadoc)
+     * @see net.jazdw.jnacan.CanMessage#toJnaType()
+     */
+    @Override
     public can_frame toJnaType() {
         byte[] jnaData = new byte[8];
         System.arraycopy(this.data, 0, jnaData, 0, this.data.length);

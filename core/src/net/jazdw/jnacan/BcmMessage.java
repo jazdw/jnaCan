@@ -6,12 +6,14 @@ package net.jazdw.jnacan;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 import net.jazdw.jnacan.Utils.ReverseEnumMap;
 import net.jazdw.jnacan.Utils.ValueEnum;
 import net.jazdw.jnacan.c.CLibrary;
+import net.jazdw.jnacan.c.bcm_msg;
 import net.jazdw.jnacan.c.bcm_msg_head;
 import net.jazdw.jnacan.c.can_frame;
 import lombok.Data;
@@ -23,26 +25,36 @@ import lombok.Data;
 @Data
 public class BcmMessage implements CanMessage<bcm_msg_head> {
     BcmOperation operation;
-    EnumSet<BcmFlag> flags;
+    EnumSet<BcmFlag> flags = EnumSet.noneOf(BcmFlag.class);
     int count = 0;
     long interval1 = 0;
     long interval2 = 0;
     CanId id = null;
-    List<CanFrame> frames;
+    List<CanFrame> frames = Collections.emptyList();
     
     public BcmMessage() {
     }
     
-    protected BcmMessage(bcm_msg_head msg) {
-        operation = BcmOperation.fromValue(msg.opcode);
-        flags = BcmFlag.fromValue(msg.flags);
-        count = msg.count;
-        interval1 = Utils.timevalToMillis(msg.ival1);
-        interval2 = Utils.timevalToMillis(msg.ival2);
-        id = new CanId(msg.can_id);
-        frames = new ArrayList<CanFrame>(msg.nframes);
+    public BcmMessage(BcmOperation operation, int id) {
+        this(operation, new CanId(id));
+    }
+    
+    public BcmMessage(BcmOperation operation, CanId id) {
+        this.operation = operation;
+        this.id = id;
+    }
+    
+    protected BcmMessage(bcm_msg_head msgHead) {
+        operation = BcmOperation.fromValue(msgHead.opcode);
+        flags = BcmFlag.fromValue(msgHead.flags);
+        count = msgHead.count;
+        interval1 = Utils.timevalToMillis(msgHead.ival1);
+        interval2 = Utils.timevalToMillis(msgHead.ival2);
+        id = new CanId(msgHead.can_id);
+        frames = new ArrayList<CanFrame>(msgHead.nframes);
         
-        if (msg.frames.length == msg.nframes) {
+        if (msgHead instanceof bcm_msg) {
+            bcm_msg msg = (bcm_msg) msgHead;
             for (int i = 0; i < msg.nframes; i++) {
                 frames.add(new CanFrame(msg.frames[i]));
             }
@@ -109,9 +121,24 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
         this.frames = Arrays.asList(frames);
     }
     
+    /* (non-Javadoc)
+     * @see net.jazdw.jnacan.CanMessage#toJnaType()
+     */
     @Override
     public bcm_msg_head toJnaType() {
-        bcm_msg_head msg = new bcm_msg_head();
+        bcm_msg_head msg;
+        if (frames.size() > 0) {
+            bcm_msg msgWithFrames = new bcm_msg();
+            msgWithFrames.frames = new can_frame[frames.size()];
+            
+            for (int i = 0; i < frames.size(); i++) {
+                msgWithFrames.frames[i] = frames.get(i).toJnaType();
+            }
+            msg = msgWithFrames;
+        }
+        else {
+            msg = new bcm_msg_head();
+        }
         
         msg.opcode = operation.value();
         
@@ -125,13 +152,7 @@ public class BcmMessage implements CanMessage<bcm_msg_head> {
         msg.ival1 = Utils.millisToTimeval(interval1);
         msg.ival2 = Utils.millisToTimeval(interval2);
         msg.can_id = id == null ? 0 : id.getId();
-
         msg.nframes = frames.size();
-        msg.frames = new can_frame[frames.size()];
-        
-        for (int i = 0; i < frames.size(); i++) {
-            msg.frames[i] = frames.get(i).toJnaType();
-        }
         
         return msg;
     }

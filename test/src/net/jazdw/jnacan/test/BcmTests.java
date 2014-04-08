@@ -76,20 +76,23 @@ public class BcmTests {
         rxSocket.close();
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void bcmSend() throws IOException {
-        final int canId = 0x300;
+        final int id = 0x300;
+        final int frameId = 0x200;
         final int numToReceive = 8;
+        
+        CanFrame frame1 = new CanFrame(frameId, 0xAA, 0xBB, 0xCC);
+        CanFrame frame2 = new CanFrame(frameId, 0, 1, 2, 3, 4, 5, 6, 7);
         
         BcmMessage msg = new BcmMessage();
         msg.setOperation(TX_SETUP);
         msg.setFlags(EnumSet.of(SETTIMER, STARTTIMER, TX_CP_CAN_ID));
-        msg.setId(canId);
+        msg.setId(id);
         msg.setCount(numToReceive/2);
         msg.setInterval1(100);
-        msg.setInterval2(500);
-        msg.setFrames(new CanFrame(0x100, 0xAA, 0xBB, 0xCC),
-                new CanFrame(0x200, 0, 1, 2, 3, 4, 5, 6, 7));
+        msg.setInterval2(1000);
+        msg.setFrames(frame1, frame2);
         
         txSocket.send(msg);
         
@@ -97,7 +100,7 @@ public class BcmTests {
         try {
             for (i = 0; i < numToReceive; i++) {
                 CanFrame frame = rxSocket.receiveTimestamped();
-                if (frame.getId().getId() != canId)
+                if (frame.getId().getId() != id)
                     fail("TX_CP_CAN_ID flag didn't work");
                 System.out.println("Read CanFrame " + i + ": " + frame);
             }
@@ -105,5 +108,27 @@ public class BcmTests {
         catch (SocketTimeoutException e) {
             fail("Socket read timed out while trying to read " + (i+1) + " of " + numToReceive + " frames");
         }
+        
+        BcmMessage delete = new BcmMessage(TX_DELETE, id);
+        txSocket.send(delete);
+        
+        // dont set TX_CP_CAN_ID
+        msg.setFlags(EnumSet.of(SETTIMER, STARTTIMER));
+        txSocket.send(msg);
+        
+        i = 0;
+        try {
+            for (i = 0; i < numToReceive; i++) {
+                CanFrame frame = rxSocket.receiveTimestamped();
+                if (frame.getId().getId() != frameId)
+                    fail("Got wrong can ID");
+                System.out.println("Read CanFrame " + i + ": " + frame);
+            }
+        }
+        catch (SocketTimeoutException e) {
+            fail("Socket read timed out while trying to read " + (i+1) + " of " + numToReceive + " frames");
+        }
+        
+        txSocket.send(delete);
     }
 }

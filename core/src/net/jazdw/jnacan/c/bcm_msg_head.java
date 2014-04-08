@@ -1,4 +1,5 @@
 package net.jazdw.jnacan.c;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
@@ -32,13 +33,14 @@ public class bcm_msg_head extends Structure {
 	public int can_id;
 	/** C type : __u32 */
 	public int nframes;
-	/** C type : can_frame[0] */
-	public can_frame[] frames = new can_frame[0];
 	public bcm_msg_head() {
 		super();
 	}
+    public bcm_msg_head(Pointer ptr) {
+        super(ptr);
+    }
 	protected List<? > getFieldOrder() {
-		return Arrays.asList("opcode", "flags", "count", "ival1", "ival2", "can_id", "nframes", "frames");
+		return Arrays.asList("opcode", "flags", "count", "ival1", "ival2", "can_id", "nframes");
 	}
 	/**
 	 * @param opcode C type : __u32<br>
@@ -48,9 +50,8 @@ public class bcm_msg_head extends Structure {
 	 * @param ival2 C type : timeval<br>
 	 * @param can_id C type : canid_t<br>
 	 * @param nframes C type : __u32<br>
-	 * @param frames C type : can_frame[0]
 	 */
-	public bcm_msg_head(int opcode, int flags, int count, timeval ival1, timeval ival2, int can_id, int nframes, can_frame frames[]) {
+	public bcm_msg_head(int opcode, int flags, int count, timeval ival1, timeval ival2, int can_id, int nframes) {
 		super();
 		this.opcode = opcode;
 		this.flags = flags;
@@ -59,9 +60,8 @@ public class bcm_msg_head extends Structure {
 		this.ival2 = ival2;
 		this.can_id = can_id;
 		this.nframes = nframes;
-		this.frames = frames;
 	}
-	public static class ByReference extends bcm_msg_head implements Structure.ByReference {
+    public static class ByReference extends bcm_msg_head implements Structure.ByReference {
 		
 	};
 	public static class ByValue extends bcm_msg_head implements Structure.ByValue {

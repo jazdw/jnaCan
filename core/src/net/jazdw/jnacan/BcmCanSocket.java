@@ -7,10 +7,15 @@ package net.jazdw.jnacan;
 import java.io.IOException;
 import java.net.SocketException;
 
+import net.jazdw.jnacan.c.bcm_msg;
 import net.jazdw.jnacan.c.bcm_msg_head;
 import net.jazdw.jnacan.c.can_frame;
 
 /**
+ * A broadcast manager socket which sends and receives BCM messages.
+ * A BCM socket can be used to periodically send CAN frames or check if
+ * certain CAN frames are being received
+ * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
@@ -33,7 +38,7 @@ public class BcmCanSocket extends CanSocket<bcm_msg_head, BcmMessage> {
     public BcmMessage receive() throws IOException {
         bcm_msg_head msg = new bcm_msg_head();
         super.receive(msg);
-        readFrames(msg);
+        msg = readFrames(msg);
         return new BcmMessage(msg);
     }
 
@@ -57,10 +62,15 @@ public class BcmCanSocket extends CanSocket<bcm_msg_head, BcmMessage> {
      * 
      * @param msg
      */
-    private void readFrames(bcm_msg_head msg) {
-        if (msg.nframes > 0) {
-            msg.frames = new can_frame[msg.nframes];
+    private bcm_msg_head readFrames(bcm_msg_head msgHead) {
+        if (msgHead.nframes > 0) {
+            bcm_msg msg = new bcm_msg(msgHead.getPointer());
+            msg.frames = new can_frame[msgHead.nframes];
             msg.read();
+            return msg;
+        }
+        else {
+            return msgHead;
         }
     }
 }

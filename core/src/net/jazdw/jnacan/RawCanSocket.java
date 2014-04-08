@@ -22,6 +22,8 @@ import net.jazdw.jnacan.c.sockaddr;
 import net.jazdw.jnacan.c.sockaddr_can;
 
 /**
+ * A raw CAN socket which sends and receives CAN frames
+ * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
