@@ -26,6 +26,10 @@ public class CanFilter {
         this(new CanId(id), new CanId(mask));
     }
     
+    public CanFilter(CanId id, int mask) {
+        this(id, new CanId(mask));
+    }
+    
     public CanFilter(CanId id, CanId mask) {
         this.id = id;
         this.mask = mask;
