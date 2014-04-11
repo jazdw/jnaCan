@@ -111,7 +111,7 @@ public class CanChannel extends AbstractOioMessageChannel {
     protected void doBind(SocketAddress localAddress) throws Exception {
         CanInterface local = (CanInterface) localAddress;
         
-        socket.setTimestamp(config.isTimestamp());
+        socket.setTimestampEnabled(config.isTimestampEnabled());
         socket.setLoopback(config.isLoopback());
         socket.setRecvOwnMsgs(config.isRecvOwnMsgs());
         socket.setFilters(config.getFilters());
@@ -160,7 +160,7 @@ public class CanChannel extends AbstractOioMessageChannel {
     protected int doReadMessages(List<Object> msgs) throws Exception {
         CanFrame frame;
         try {
-            if (config.isTimestamp())
+            if (socket.isTimestampEnabled())
                 frame = socket.receiveTimestamped();
             else
                 frame = socket.receive();
@@ -211,8 +211,8 @@ public class CanChannel extends AbstractOioMessageChannel {
             throw new NullPointerException("value");
         }
         
-        if (option == TIMESTAMP) {
-            socket.setTimestamp((Boolean) value);
+        if (option == TIMESTAMP_ENABLED) {
+            socket.setTimestampEnabled((Boolean) value);
         } else if (option == LOOPBACK) {
             socket.setLoopback((Boolean) value);
         } else if (option == RECV_OWN_MSGS) {

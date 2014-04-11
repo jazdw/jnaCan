@@ -94,7 +94,7 @@ public class RawTests {
     
     @Test
     public void timestampTest() throws IOException {
-        rxSocket.setTimestamp(true);
+        rxSocket.setTimestampEnabled(true);
         
         List<CanFrame> frames = new ArrayList<CanFrame>();
         

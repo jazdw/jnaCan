@@ -13,8 +13,8 @@ import io.netty.channel.ChannelOption;
  * @author Jared Wiltshire
  */
 public final class CanChannelOption<T> extends ChannelOption<T> {
-    public static final CanChannelOption<Boolean> TIMESTAMP =
-            new CanChannelOption<Boolean>("TIMESTAMP");
+    public static final CanChannelOption<Boolean> TIMESTAMP_ENABLED =
+            new CanChannelOption<Boolean>("TIMESTAMP_ENABLED");
     
     public static final CanChannelOption<Boolean> LOOPBACK =
             new CanChannelOption<Boolean>("LOOPBACK");
