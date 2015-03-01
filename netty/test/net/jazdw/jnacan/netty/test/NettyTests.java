@@ -2,7 +2,7 @@
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
  */
-package net.jazdw.jnacan.test;
+package net.jazdw.jnacan.netty.test;
 
 import java.io.IOException;
 import java.io.InputStream;
