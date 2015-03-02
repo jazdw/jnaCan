@@ -93,7 +93,7 @@ public class NettyTests {
                     }
 
                     @Override
-                    protected void channelRead0(ChannelHandlerContext ctx, CanFrame msg) throws Exception {
+                    protected void messageReceived(ChannelHandlerContext ctx, CanFrame msg) throws Exception {
                         System.out.println(msg);
                         
                         if (msg.equals(first)) {

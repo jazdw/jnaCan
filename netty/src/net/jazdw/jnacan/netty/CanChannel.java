@@ -9,6 +9,7 @@ import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelMetadata;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelOutboundBuffer;
+import io.netty.channel.EventLoop;
 import io.netty.channel.oio.AbstractOioMessageChannel;
 import io.netty.util.internal.StringUtil;
 
@@ -25,7 +26,7 @@ import net.jazdw.jnacan.CanInterface;
 import net.jazdw.jnacan.RawCanSocket;
 
 /**
- * Netty 4.0 channel implementation for jnaCAN
+ * Netty 5.0 channel implementation for jnaCAN
  * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
@@ -37,8 +38,8 @@ public class CanChannel extends AbstractOioMessageChannel {
     private final CanChannelConfig config;
     private final RawCanSocket socket;
 
-    public CanChannel() {
-        super(null);
+    public CanChannel(EventLoop eventLoop) {
+        super(null, eventLoop);
         this.socket = new RawCanSocket();
         try {
             this.socket.open();

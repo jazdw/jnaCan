@@ -252,15 +252,6 @@ final class DefaultCanChannelConfig extends DefaultChannelConfig implements CanC
     }
 
     /* (non-Javadoc)
-     * @see io.netty.channel.DefaultChannelConfig#setAutoClose(boolean)
-     */
-    @Override
-    public CanChannelConfig setAutoClose(boolean autoClose) {
-        super.setAutoClose(autoClose);
-        return this;
-    }
-
-    /* (non-Javadoc)
      * @see io.netty.channel.DefaultChannelConfig#setWriteBufferHighWaterMark(int)
      */
     @Override

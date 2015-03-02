@@ -120,12 +120,6 @@ public interface Tp20ChannelConfig extends ChannelConfig {
     Tp20ChannelConfig setAutoRead(boolean autoRead);
 
     /* (non-Javadoc)
-     * @see io.netty.channel.ChannelConfig#setAutoClose(boolean)
-     */
-    @Override
-    Tp20ChannelConfig setAutoClose(boolean autoClose);
-
-    /* (non-Javadoc)
      * @see io.netty.channel.ChannelConfig#setWriteBufferHighWaterMark(int)
      */
     @Override

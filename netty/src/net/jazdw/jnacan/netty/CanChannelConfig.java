@@ -124,12 +124,6 @@ public interface CanChannelConfig extends ChannelConfig {
     CanChannelConfig setAutoRead(boolean autoRead);
 
     /* (non-Javadoc)
-     * @see io.netty.channel.ChannelConfig#setAutoClose(boolean)
-     */
-    @Override
-    CanChannelConfig setAutoClose(boolean autoClose);
-
-    /* (non-Javadoc)
      * @see io.netty.channel.ChannelConfig#setWriteBufferHighWaterMark(int)
      */
     @Override

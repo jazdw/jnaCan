@@ -228,15 +228,6 @@ final class DefaultTp20ChannelConfig extends DefaultChannelConfig implements Tp2
     }
 
     /* (non-Javadoc)
-     * @see io.netty.channel.DefaultChannelConfig#setAutoClose(boolean)
-     */
-    @Override
-    public Tp20ChannelConfig setAutoClose(boolean autoClose) {
-        super.setAutoClose(autoClose);
-        return this;
-    }
-
-    /* (non-Javadoc)
      * @see io.netty.channel.DefaultChannelConfig#setWriteBufferHighWaterMark(int)
      */
     @Override

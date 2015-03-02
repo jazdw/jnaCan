@@ -9,6 +9,7 @@ import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelMetadata;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelOutboundBuffer;
+import io.netty.channel.EventLoop;
 import io.netty.channel.oio.AbstractOioMessageChannel;
 import io.netty.util.internal.StringUtil;
 
@@ -29,7 +30,7 @@ import net.jazdw.jnacan.netty.tp20.messages.Tp20ChannelSetup;
 import net.jazdw.jnacan.netty.tp20.messages.Tp20Message.Tp20OpCode;
 
 /**
- * Netty 4.0 channel implementation for VW Transport Protocol 2.0
+ * Netty 5.0 channel implementation for VW Transport Protocol 2.0
  * 
  * Copyright (C) 2014 Jared Wiltshire. All rights reserved.
  * @author Jared Wiltshire
@@ -43,8 +44,8 @@ public class Tp20Channel extends AbstractOioMessageChannel {
     private CanId txId;
     private CanId rxId;
 
-    public Tp20Channel() {
-        super(null);
+    public Tp20Channel(EventLoop eventLoop) {
+        super(null, eventLoop);
         this.socket = new RawCanSocket();
         try {
             this.socket.open();
